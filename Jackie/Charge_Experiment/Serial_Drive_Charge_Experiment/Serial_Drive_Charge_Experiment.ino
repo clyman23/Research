@@ -34,7 +34,7 @@ int i, j, k = 0; // Counters
 int check = 0; // Command initialization check. If 1, commands are executed
 int checkCharacter = '$'; // First character of command must match symbol
 int inWaiting; // Number of bytes in serial buffer
-int vel = 150; // Driving velocity
+int vel = 250; // Driving velocity
 int turnSpeed = 200; // Turning velocity
 float straightGain = 791; // 791 encoder counts per inch 
 
