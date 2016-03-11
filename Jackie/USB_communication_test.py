@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Feb 20 14:36:33 2016
+Created on Fri Mar 11 14:06:28 2016
 
 @author: clyman
 """
@@ -88,7 +88,7 @@ brake = '$00000'
 
 
 #PORT = '/dev/tty.usbserial-DA011NKM' 
-PORT = '/dev/tty.usbmodem1411'
+PORT = '/dev/tty.usbmodem1421'
 BaudRate = 38400
 robot = serial.Serial(PORT, BaudRate, timeout = 3)
 time.sleep(0.5)
@@ -100,6 +100,7 @@ time.sleep(1)
 robot.flushInput()
 robot.flushOutput()
 
+'''
 for i in range(0,5): # range(0,5), then range(5,10), (10,15) ...
     file_name = '13inchesMarch8Grass_0' + str(i) + '.csv'
     data_file = open(file_name,'wb')
@@ -108,6 +109,16 @@ for i in range(0,5): # range(0,5), then range(5,10), (10,15) ...
     
     charge = drive_robot(drive, brake)
     print "The total charge for this test is " + str(charge)
+    time.sleep(3)
+    data_file.close()
+'''
+
+for i in range(0,5):
+    file_name = 'test_' + str(i) + '.csv'
+    data_file = open(file_name, 'wb')
+    writer = csv.writer(data_file)
+    charge = drive_robot(drive,brake)
+    print "Driven..." + str(i)
     time.sleep(3)
     data_file.close()
 
