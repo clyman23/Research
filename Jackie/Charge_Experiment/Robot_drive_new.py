@@ -27,7 +27,7 @@ def read_robot():
         if check == checkCharacter:
     #        while robot.inWaiting():
             b = robot.inWaiting()
-    #            time.sleep(0.05)
+#            time.sleep(0.05) #try uncommenting for USB communication
             if b >= charToRead:
     #                if b > charToRead:
     #                    b = charToRead
@@ -82,13 +82,13 @@ def brake_robot(brake):
 
 '''!!!!!CHANGE PARAMETERS BASED ON WHAT IS PLUGGED IN!!!!!'''
 
-drive = '$11300' #drive 40 inches
+drive = '$13300' #drive 40 inches
 brake = '$00000'
 
 
 
-#PORT = '/dev/tty.usbserial-DA011NKM' 
-PORT = '/dev/tty.usbmodem1411'
+PORT = '/dev/tty.usbserial-DA011NKM' 
+#PORT = '/dev/tty.usbmodem1411'
 BaudRate = 38400
 robot = serial.Serial(PORT, BaudRate, timeout = 3)
 time.sleep(0.5)
@@ -100,8 +100,8 @@ time.sleep(1)
 robot.flushInput()
 robot.flushOutput()
 
-for i in range(0,5): # range(0,5), then range(5,10), (10,15) ...
-    file_name = '13inchesMarch8Grass_0' + str(i) + '.csv'
+for i in range(5,10): # range(0,5), then range(5,10), (10,15) ...
+    file_name = '33inchesSpeed250_0' + str(i) + '.csv'
     data_file = open(file_name,'wb')
     writer = csv.writer(data_file)
     writer.writerow(('encoder', 'seconds', 'current (A)', 'charge (C)'))
