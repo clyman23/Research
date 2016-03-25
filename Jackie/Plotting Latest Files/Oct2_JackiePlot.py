@@ -51,7 +51,8 @@ plt.ylabel("Voltage (V)")
 plt.title("Voltage vs. Time")
 #plt.text(25, 4, "Red = Solar\nBlack = Thermo")
 
-robot = serial.Serial('/dev/tty.usbserial-DA00VSB5', 38400, timeout = 1) 
+PORT = '/dev/tty.usbserial-DA011NKM' #.usbserial-DA00VSB5 for XBee
+robot = serial.Serial(PORT, 38400, timeout = 1) 
 
 if robot.isOpen() == True:
     print "Port opened"

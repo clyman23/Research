@@ -17,7 +17,7 @@ String index; //Indicates whether robot is moving straight or turning
 String dist;
 String encoder1; 
 String encoder2;
-String encoder3;
+String encoder3 = String(int(0));
 String turn; //Data readings are converted to strings when sent over Xbee
 String voltsSolar; //Stores voltage reading of solar panel
 String voltsThermo;
@@ -27,7 +27,7 @@ String time;
 Servo pan;
 Encoder enc1(2,3); //motor 1 encoder pins
 Encoder enc2(18,19); //motor 2 encoder pins
-Encoder enc3(20,21); //motor 3 encoder pins
+//Encoder enc3(20,21); //motor 3 encoder pins
 DualVNH5019MotorShield md(22, 23, 24, A7, 28, 26, 25, A8); //pin assignments: (INA1, INB1, EN1DIAG1, CS1, INA2, INB2, EN2DIAG2, CS2) 
 RunningMedian readings = RunningMedian(5); //Define that taking 5 readings
 Adafruit_INA219 ina219; //Current sensor
@@ -88,7 +88,7 @@ void setup() {
   delay(200);
   enc1.write(0);
   enc2.write(0);
-  enc3.write(0);
+//  enc3.write(0);
   uint32_t currentFrequency; //current sensor initialization
   ina219.begin();
   ina219.setCalibration_32V_1A();
@@ -117,7 +117,7 @@ void driveStraight() { //only sends encoder counts traversed since last data rea
   delay(50);
   encPos1 = abs(enc1.read());
   encPos2 = abs(enc2.read());
-  encPos3 = abs(enc3.read());
+//  encPos3 = abs(enc3.read());
   enc1SCount = encPos1 - oldCount1;
   enc2SCount = encPos2 - oldCount2;
   enc3SCount = encPos3 - oldCount3;
@@ -134,7 +134,7 @@ void brake() { //must read encoders in brake function to account for encoder cou
   md.setM2Brake(400);
   encPos1 = abs(enc1.read());
   encPos2 = abs(enc2.read());
-  encPos3 = abs(enc3.read());
+//  encPos3 = abs(enc3.read());
   enc1SCount = encPos1 - oldCount1;
   enc2SCount = encPos2 - oldCount2;
   enc3SCount = encPos3 - oldCount3;
@@ -142,7 +142,7 @@ void brake() { //must read encoders in brake function to account for encoder cou
   data(0); //(0) indicates robot is stationary.
   enc1.write(0); //reset encoders for next motion.
   enc2.write(0);
-  enc3.write(0);
+//  enc3.write(0);
   enc1SCount = 0;
   enc2SCount = 0;
   enc3SCount = 0;
@@ -172,7 +172,7 @@ void robotTurn() {
   data(3);
   enc1.write(0);
   enc2.write(0);
-  enc3.write(0);
+//  enc3.write(0);
   encTotalTCount = 0;
 }
 
@@ -287,7 +287,7 @@ void data(int motParam) {
   //Encoder data used to determine distance traveled straight
   encoder1 = String(abs(int(enc1SCount)));
   encoder2 = String(abs(int(enc2SCount)));
-  encoder3 = String(abs(int(enc3SCount)));
+//  encoder3 = String(abs(int(enc3SCount)));
   if (encoder1.length() == 1) { encoder1 = 000000 + encoder1; }
   if (encoder1.length() == 2) { encoder1 = 00000 + encoder1; }
   if (encoder1.length() == 3) { encoder1 = 0000 + encoder1; }
@@ -335,9 +335,6 @@ void data(int motParam) {
   Serial3.print(turn + " ");
   Serial3.print(voltsSolar + " ");
   Serial3.print(voltsThermo + " ");
-  Serial3.print(current + " ");
-  Serial3.print(motor1current + " ");
-  Serial3.print(motor2current + " ");
   Serial3.print(Servoangle + " ");
   Serial3.println(time);
 

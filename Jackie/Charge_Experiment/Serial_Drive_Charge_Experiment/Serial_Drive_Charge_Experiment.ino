@@ -50,6 +50,7 @@ int driveMult = 0; // Command sent to tell robot how many inches to drive forwar
 float encTotalTurn = 0; // Total encoder count from turning
 float encDriveTotal = 0; // Total encoder count from driving 
 unsigned int driveCounts = 0; // Unsigned int handles larger range - should go up to 82 inches
+boolean haveTurned = false;
 
 // Strings sent by Arduino to command computer
 String index; // Specifies if robot is braking, driving, or turning
@@ -180,10 +181,11 @@ void brake() {
 //  encCount1 = 0;
 //  encCount2 = 0;
   delay(200);
-  if (data[3] == 1) { Turn(); } // Execture turn function if prompted
+  if (data[3] == 1 && haveTurned == false) { Turn(); } // Execture turn function if prompted
                                 // Turn function is only executed in brake function to ensure
                                 // brakes are set before turning. Prevents going directly from driving
                                 // to braking
+  haveTurned = false;
 }
 
 
@@ -210,6 +212,11 @@ void Turn() {
     enc2.write(0);
   }
   j = 0;
+  haveTurned = true;
+  brake();
+  haveTurned = true;
+  brake();
+  haveTurned = true;
   brake();
   encTotalTurn = 0;
 }
@@ -268,12 +275,12 @@ void msg(int motionParam) {
   if (encoderAve.length() == 5) { encoderAve = 00 + encoderAve; }
   if (encoderAve.length() == 6) { encoderAve = 0 + encoderAve; }
 
-//  // Degrees turned
-//  angleTurned = encTotalTurn / countsDegree;
-//  turn = String(int(abs(angleTurned)));
-//  if (turn.length() == 1) { turn = 000 + turn; }
-//  if (turn.length() == 2) { turn = 00 + turn; }
-//  if (turn.length() == 3) { turn = 0 + turn; }
+  // Degrees turned
+  angleTurned = encTotalTurn / countsDegree;
+  turn = String(int(abs(angleTurned)));
+  if (turn.length() == 1) { turn = 000 + turn; }
+  if (turn.length() == 2) { turn = 00 + turn; }
+  if (turn.length() == 3) { turn = 0 + turn; }
 
   // Time
   if(endTime.length() == 1) { endTime = 000000 + endTime; }
@@ -300,7 +307,7 @@ void msg(int motionParam) {
 //  Serial3.print(encoder1 + " ");
 //  Serial3.print(encoder2 + " ");
   Serial3.print(encoderAve + " ");
-//  Serial3.print(turn + " ");
+  Serial3.print(turn + " ");
   Serial3.print(endTime + " ");
   Serial3.println(current);
 }
