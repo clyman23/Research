@@ -3,14 +3,14 @@ import numpy as np
 import time
 import matplotlib.pyplot as plt
 
-
 def openPlot():
     plt.ion()
     robot_position = [12, -15] #starting position
-    robot_radius = 3 #size of robot representation
+#    robot_radius = 3 #size of robot representation
     robot_theta = 0 #angle robot is pointed at
+    dist_traveled = 0
     plt.figure(1)
-    plt.subplot(211)
+#    plt.subplot(211)
     plt.hold(True)
     plt.axis([-10, 110, -70, 10])
     plt.plot([0, 102], [0, 0], 'b-') #Create box representing boundaries
@@ -18,22 +18,25 @@ def openPlot():
     plt.plot([102, 0], [-62, -62], 'b-')
     plt.plot([0, 0], [-62, 0], 'b-')
     plt.figure(1)
-    plt.subplot(212)
+    '''plt.subplot(212)
     plt.hold(True)
     plt.axis([0, 32, 0, 5.1])
     plt.xlabel("Time (s)")
     plt.ylabel("Voltage (V)")
-    plt.title("Voltage vs. Time")
-    return robot_position, robot_radius, robot_theta
+    plt.title("Voltage vs. Time")'''
+    return robot_position, robot_theta, dist_traveled
 
 
-def read_robot(): 
+def read_robot(position): 
     encoder = np.zeros(500)
     seconds = np.zeros(500)
     current = np.zeros(500)
     charge = np.zeros(500)
     counter = 0
     total_charge = 0
+    robot_pos = position[0]
+    robot_theta = position[1]
+    dist_traveled = position[2]
     while True:
         charToRead = 24
         checkCharacter = '$1'
@@ -50,20 +53,34 @@ def read_robot():
                 total_charge += charge[counter]
                 counter += 1
                 print msg
+            new_pos = draw_travel(robot_pos, encoder[counter], robot_theta, dist_traveled)
         elif check == breakCheck:
             break
-    
+    return new_pos
+
+def draw_travel(old_pos, encoder, robot_theta, dist_traveled):
+    new_pos = np.array([0,0])    
+    new_pos[0] = old_pos[0] + encoder*np.cos(robot_theta)
+    new_pos[1] = old_pos[1] + encoder*np.sin(robot_theta)
+    plt.figure(1)
+#    plt.subplot(211)
+    plt.plot([old_pos[0], new_pos[0]], [old_pos[1], new_pos[1]], 'g-')
+    old_pos[0] = new_pos[0]
+    old_pos[1] = new_pos[1]
+    dist_traveled = dist_traveled + encoder
+    return new_pos, robot_theta, dist_traveled
     
 
-def drive_robot(drive,brake):
+def drive_robot(drive,brake,position):
     robot.flushInput()
     robot.flushOutput()
     time.sleep(0.2)
     robot.write(drive)
     time.sleep(0.3)
-    charge = read_robot()
+    new_pos = read_robot(position)
     brake_robot(brake)
-    return charge
+    return new_pos
+
     
 
 def brake_robot(brake):
@@ -95,10 +112,10 @@ robot.write(brake)
 time.sleep(1)    
 robot.flushInput()
 robot.flushOutput()
-robotInitials = np.array(openPlot()) #[robot position, robot radius, robot theta]
+robotInitials = np.array(openPlot()) #[robot position, robot theta, dist_traveled]
 
 
-drive_robot(drive, brake)
+position = drive_robot(drive, brake, robotInitials)
 time.sleep(3)
 
 robot.close()
