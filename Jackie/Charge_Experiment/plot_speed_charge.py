@@ -15,8 +15,8 @@ import os.path
 
 #lengths = numpy.array([13, 23, 33, 43, 53])
 #lengths = numpy.array([13])
-mn = numpy.zeros(5)
-st = numpy.zeros(5)
+mn = numpy.zeros(4)
+st = numpy.zeros(4)
 dist = numpy.array([100,150,200,250])
 
 for ind, j  in enumerate(dist):
@@ -56,15 +56,18 @@ for ind, j  in enumerate(dist):
 
     #print(charge_totals)
     #print(numpy.size(charge_totals))    
-    mn[ind+1] = numpy.mean(charge_totals)
-    st[ind+1] = numpy.std(charge_totals)
+    #mn[ind+1] = numpy.mean(charge_totals)
+    #st[ind+1] = numpy.std(charge_totals)
+    mn[ind] = numpy.mean(charge_totals)
+    st[ind] = numpy.std(charge_totals)    
     
-l = numpy.append([0], dist) 
-m, b = numpy.polyfit(l, mn, 1)
+#l = numpy.append([0], dist) 
+m, b = numpy.polyfit(dist, mn, 1)
 pyplot.figure()
-pyplot.plot(l, m*l+b, label = 'Floor')
+pyplot.plot(dist, m*dist+b, label = 'Floor')
 #pyplot.plot(l, m*l+b, label = 'Lab Floor')
-pyplot.errorbar(l, mn, yerr = st, fmt = 'x')
+pyplot.errorbar(dist, mn, yerr = st, fmt = 'x')
+pyplot.axis([90, 260, 0, 80])
 pyplot.title('Charge vs. Speed')
 pyplot.xlabel('Speed')
 pyplot.ylabel('charge used (Amp-seconds)')
