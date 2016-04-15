@@ -160,6 +160,7 @@ void brake() {
   md.setM2Brake(400);
 //  Serial3.println("Brake.....................!!!!");
   delay(100);
+  endTime = String(0);
   encCount1 = abs(enc1.read()); // Should be zero...
   encCount2 = abs(enc2.read());
   delay(100);

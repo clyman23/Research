@@ -64,7 +64,7 @@ for ind, j  in enumerate(lengths):
 l = numpy.append([0], lengths) 
 m, b = numpy.polyfit(l, mn, 1)
 pyplot.figure()
-pyplot.plot(l, m*l+b, label = 'Gravel')
+pyplot.plot(l, m*l+b, label = 'Grass')
 #pyplot.plot(l, m*l+b, label = 'Lab Floor')
 pyplot.errorbar(l, mn, yerr = st, fmt = 'x')
 pyplot.title('Charge vs. distance')
