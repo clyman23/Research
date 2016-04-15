@@ -23,8 +23,9 @@ for ind, j  in enumerate(lengths):
     charge_totals = numpy.array([])
     
     for i in range(0,15):
-        filename = '{0:02d}_gravel_Feb28_{1:02d}.csv'.format(j,i)
-        figname = '{0:02d}_gravel_Feb28_{1:02d}.png'.format(j,i)
+        #filename = '{0:02d}_gravel_Feb28_{1:02d}.csv'.format(j,i)
+        filename = '{0:02d}GrassApr13_{1:02d}.csv'.format(j,i) 
+        figname = '{0:02d}GrassApr13_{1:02d}.png'.format(j,i)
         if os.path.isfile(filename) is True:
             with open(filename, 'rb') as f:
                 mycsv = csv.reader(f)
@@ -57,5 +58,5 @@ for ind, j  in enumerate(lengths):
             pyplot.ylabel('charge C' );
             pyplot.savefig(figname)
             pyplot.close(figure)
-            
+            pyplot.show()
             charge_totals = numpy.append(charge_totals, tot[-1])

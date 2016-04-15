@@ -19,19 +19,24 @@ def read_robot():
     counter = 0
     encoderCheck = 2000
     total_charge = 0
+    print "reading..."
     while True:
+        print "while"
         charToRead = 24
         checkCharacter = '$1'
         breakCheck = '$0'
         check = robot.read(2)
+        print check
         if check == checkCharacter:
     #        while robot.inWaiting():
             b = robot.inWaiting()
-#            time.sleep(0.05) #try uncommenting for USB communication
+            time.sleep(0.05) #try uncommenting for USB communication
+            print b
             if b >= charToRead:
     #                if b > charToRead:
     #                    b = charToRead
                 msg = robot.readline()
+                print "msg"
                 if int(msg[0:8]) > encoderCheck:
                     encoder[counter] = int(msg[0:8])
                     seconds[counter] = float(msg[9:16]) / 1000.
@@ -57,9 +62,10 @@ def write2csv(encoder, seconds, current, charge, counter):
     
 
 def drive_robot(drive,brake):
-    robot.flushInput()
+    print "driving"
+    #robot.flushInput()
     robot.flushOutput()
-    time.sleep(0.2)
+    time.sleep(0.3)
     robot.write(drive)
     time.sleep(0.3)
     charge = read_robot()
@@ -68,6 +74,7 @@ def drive_robot(drive,brake):
     
 
 def brake_robot(brake):
+    print "braking"
     robot.flushInput()
     robot.flushOutput()
     time.sleep(0.2)
@@ -82,26 +89,25 @@ def brake_robot(brake):
 
 '''!!!!!CHANGE PARAMETERS BASED ON WHAT IS PLUGGED IN!!!!!'''
 
-drive = '$13300' #drive 40 inches
+drive = '$12300' #drive 40 inches
 brake = '$00000'
 
 
-
-PORT = '/dev/tty.usbserial-DA011NKM' 
-#PORT = '/dev/tty.usbmodem1411'
+#PORT = '/dev/tty.usbserial-DA011NKM' 
+PORT = '/dev/tty.usbmodem1411'
 BaudRate = 38400
 robot = serial.Serial(PORT, BaudRate, timeout = 3)
 time.sleep(0.5)
 if robot.isOpen():
     print 'Robot opened\n'
 
-robot.write(brake)
+brake_robot(brake)
 time.sleep(1)    
 robot.flushInput()
 robot.flushOutput()
 
-for i in range(5,10): # range(0,5), then range(5,10), (10,15) ...
-    file_name = '33inchesSpeed250_0' + str(i) + '.csv'
+for i in range(15,20): # range(0,5), then range(5,10), (10,15) ...
+    file_name = '23GrassApr13_' + str(i) + '.csv'
     data_file = open(file_name,'wb')
     writer = csv.writer(data_file)
     writer.writerow(('encoder', 'seconds', 'current (A)', 'charge (C)'))
@@ -110,6 +116,8 @@ for i in range(5,10): # range(0,5), then range(5,10), (10,15) ...
     print "The total charge for this test is " + str(charge)
     time.sleep(3)
     data_file.close()
+    
+#drive_robot(drive,brake)
 
 robot.close()
 
