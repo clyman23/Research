@@ -22,34 +22,35 @@ def read_robot():
     total_charge = 0
     
     while True:
-        charToRead = 24
+#        charToRead = 21
         checkCharacter = '$1'
         breakCheck = '$0'
+#        print robot.inWaiting()
         check = robot.read(2)
 #        print check
         if check == checkCharacter:
     #        while robot.inWaiting():
-            b = robot.inWaiting()
+#            b = robot.inWaiting()
             #time.sleep(0.05) #try uncommenting for USB communication
             #print b
-            if b >= charToRead:
+#            if b >= charToRead:
     #                if b > charToRead:
     #                    b = charToRead
-                msg = robot.readline()
-                if int(msg[0:8]) > encoderCheck:
-                    encoder[counter] = int(msg[0:8])
-                    seconds[counter] = float(msg[9:16]) / 1000.
-                    current[counter] = float(msg[17:]) / 1000.
-                    charge[counter] = current[counter] * seconds[counter]
-                    total_charge += charge[counter]
-                    counter += 1
-                    print msg
+            msg = robot.readline()
+            if int(msg[0:7]) > encoderCheck:
+                encoder[counter] = int(msg[0:7])
+                seconds[counter] = float(msg[8:13]) / 1000.
+                current[counter] = float(msg[14:]) / 1000.
+                charge[counter] = current[counter] * seconds[counter]
+                total_charge += charge[counter]
+                counter += 1
+                print msg
      #           print "\n"
         elif check == breakCheck:
             break
         #elif check != checkCharacter and check != breakCheck:
          #   check = robot.read(2)
-    #write2csv(encoder, seconds, current, charge, counter)
+    write2csv(encoder, seconds, current, charge, counter)
     
     return total_charge
  
@@ -62,8 +63,8 @@ def write2csv(encoder, seconds, current, charge, counter):
 
 def drive_robot(drive,brake):
     print "driving"
-    #robot.flushInput()
-    #robot.flushOutput()
+    robot.flushInput()
+    robot.flushOutput()
     time.sleep(0.3)
     robot.write(drive)
     time.sleep(0.3)
@@ -91,7 +92,8 @@ def brake_robot(brake):
 
 '''!!!!!CHANGE PARAMETERS BASED ON WHAT IS PLUGGED IN!!!!!'''
 
-drive = '$12300' #drive 40 inches
+dist = 33
+drive = '$1'+str(dist)+'00' #drive dist inches
 brake = '$00000'
 
 
@@ -109,20 +111,21 @@ time.sleep(1)
 #robot.flushInput()
 #robot.flushOutput()
 
-'''for i in range(15,20): # range(0,5), then range(5,10), (10,15) ...
-    file_name = '23GrassApr13_' + str(i) + '.csv'
+for i in range(0,5): # range(0,5), then range(5,10), (10,15) ...
+    file_name = '{0:02d}_testApr21_{1:02d}.csv'.format(dist,i)
     data_file = open(file_name,'wb')
+    time.sleep(0.1)
     writer = csv.writer(data_file)
     writer.writerow(('encoder', 'seconds', 'current (A)', 'charge (C)'))
-    
+    time.sleep(0.1)
     charge = drive_robot(drive, brake)
     print "The total charge for this test is " + str(charge)
     time.sleep(3)
     data_file.close()
     robot.flushInput()
-    robot.flushOutput()'''
+    robot.flushOutput()
     
-drive_robot(drive,brake)
+#drive_robot(drive,brake)
 
 robot.close()
 

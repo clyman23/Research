@@ -147,9 +147,6 @@ void drive() {
     endTime = String(millis() - startTime);
     brake();
     brake();
-    brake();
-    brake();
-    brake();
   }
  else if (data[0] == 0) { brake(); } // Move on to brake function if the first data is 0
 }
@@ -262,12 +259,11 @@ void msg(int motionParam) {
 
 // Send one encoder value - attempting to send less data in order to reduce amount of data in buffer
   encoderAve = String(encDrive);
-  if (encoderAve.length() == 1) { encoderAve = 000000 + encoderAve; }
-  if (encoderAve.length() == 2) { encoderAve = 00000 + encoderAve; }
-  if (encoderAve.length() == 3) { encoderAve = 0000 + encoderAve; }
-  if (encoderAve.length() == 4) { encoderAve = 000 + encoderAve; }
-  if (encoderAve.length() == 5) { encoderAve = 00 + encoderAve; }
-  if (encoderAve.length() == 6) { encoderAve = 0 + encoderAve; }
+  if (encoderAve.length() == 1) { encoderAve = 00000 + encoderAve; }
+  if (encoderAve.length() == 2) { encoderAve = 0000 + encoderAve; }
+  if (encoderAve.length() == 3) { encoderAve = 000 + encoderAve; }
+  if (encoderAve.length() == 4) { encoderAve = 00 + encoderAve; }
+  if (encoderAve.length() == 5) { encoderAve = 0 + encoderAve; }
 
 //  // Degrees turned
 //  angleTurned = encTotalTurn / countsDegree;
@@ -277,12 +273,10 @@ void msg(int motionParam) {
 //  if (turn.length() == 3) { turn = 0 + turn; }
 
   // Time
-  if(endTime.length() == 1) { endTime = 000000 + endTime; }
-  if(endTime.length() == 2) { endTime = 00000 + endTime; }
-  if(endTime.length() == 3) { endTime = 0000 + endTime; }
-  if(endTime.length() == 4) { endTime = 000 + endTime; }
-  if(endTime.length() == 5) { endTime = 00 + endTime; }
-  if(endTime.length() == 6) { endTime = 0 + endTime; }
+  if(endTime.length() == 1) { endTime = 0000 + endTime; }
+  if(endTime.length() == 2) { endTime = 000 + endTime; }
+  if(endTime.length() == 3) { endTime = 00 + endTime; }
+  if(endTime.length() == 4) { endTime = 0 + endTime; }
 
   // Current
   current_mA = ina219.getCurrent_mA(); // Take current reading
