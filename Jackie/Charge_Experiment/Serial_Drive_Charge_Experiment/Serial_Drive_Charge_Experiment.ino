@@ -148,9 +148,6 @@ void drive() {
     endTime = String(millis() - startTime);
     brake();
     brake();
-    brake();
-    brake();
-    brake();
   }
  else if (data[0] == 0) { brake(); } // Move on to brake function if the first data is 0
 }

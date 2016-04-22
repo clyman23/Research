@@ -178,10 +178,11 @@ void brake() {
 //  encCount1 = 0;
 //  encCount2 = 0;
   delay(200);
-  if (data[3] == 1) { Turn(); } // Execture turn function if prompted
+  if (data[3] == 1 && haveTurned = false) { Turn(); } // Execture turn function if prompted
                                 // Turn function is only executed in brake function to ensure
                                 // brakes are set before turning. Prevents going directly from driving
                                 // to braking
+  haveTurned = false;
 }
 
 
@@ -208,6 +209,11 @@ void Turn() {
     enc2.write(0);
   }
   j = 0;
+  haveTurned = true;
+  brake();
+  haveTurned = true;
+  brake();
+  haveTurned = true;
   brake();
   encTotalTurn = 0;
 }
