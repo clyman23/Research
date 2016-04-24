@@ -50,6 +50,7 @@ int driveMult = 0; // Command sent to tell robot how many inches to drive forwar
 float encTotalTurn = 0; // Total encoder count from turning
 float encDriveTotal = 0; // Total encoder count from driving 
 unsigned int driveCounts = 0; // Unsigned int handles larger range - should go up to 82 inches
+boolean haveTurned = false;
 
 // Strings sent by Arduino to command computer
 String index; // Specifies if robot is braking, driving, or turning
@@ -122,6 +123,7 @@ void drive() {
       encCount1 = abs(enc1.read());
       encCount2 = abs(enc2.read());
       encDrive = (encCount1 + encCount2) / 2; // Read and average encoders
+      distanceSense();
       k++;
       if (k % 10 == 0) {
         endTime = String(millis() - startTime);
@@ -159,17 +161,10 @@ void brake() {
     encCount1 = abs(enc1.read());
     encCount2 = abs(enc2.read());
   }
-//  Serial3.print(encCount1);
-//  Serial3.print(" ");
-//  Serial3.println(encCount2);
   encDrive = (encCount1 + encCount2) / 2; 
-  msg(0); // Send data; index 0 indicates robot is stationary
-//  enc1.write(0); // Reset encoders 
-//  enc2.write(0);
-//  encCount1 = 0;
-//  encCount2 = 0;
+  msg(0);
   delay(200);
-  if (data[3] == 1 && haveTurned = false) { Turn(); } // Execture turn function if prompted
+  if (data[3] == 1 && haveTurned == false) { Turn(); } // Execture turn function if prompted
                                 // Turn function is only executed in brake function to ensure
                                 // brakes are set before turning. Prevents going directly from driving
                                 // to braking
@@ -187,8 +182,6 @@ void Turn() {
       encCount1 = abs(enc1.read());
       encCount2 = abs(enc2.read());
       encTurn = (encCount1 + encCount2) / 2; // Can add encoder 3 for turning... if connected
-      // **************** DELAYS USED IN DRIVE LOOP NOT USED HERE ***************************
-      // Suggests may be ok to take them out of drive loop
       msg(3);
     }
     j++;
@@ -237,22 +230,6 @@ void distanceSense() {
 
 void msg(int motionParam) {
   index = String(int(motionParam)); // 0 = Brake; 1 = Forward; 3 = Turn;
-
-//  // Distance traveled linearly 
-//  encoder1 = String(abs(int(encCount1)));
-//  encoder2 = String(abs(int(encCount2)));
-//  if (encoder1.length() == 1) { encoder1 = 000000 + encoder1; }
-//  if (encoder1.length() == 2) { encoder1 = 00000 + encoder1; }
-//  if (encoder1.length() == 3) { encoder1 = 0000 + encoder1; }
-//  if (encoder1.length() == 4) { encoder1 = 000 + encoder1; }
-//  if (encoder1.length() == 5) { encoder1 = 00 + encoder1; }
-//  if (encoder1.length() == 6) { encoder1 = 0 + encoder1; }
-//  if (encoder2.length() == 1) { encoder2 = 000000 + encoder2; }
-//  if (encoder2.length() == 2) { encoder2 = 00000 + encoder2; }
-//  if (encoder2.length() == 3) { encoder2 = 0000 + encoder2; }
-//  if (encoder2.length() == 4) { encoder2 = 000 + encoder2; }
-//  if (encoder2.length() == 5) { encoder2 = 00 + encoder2; }
-//  if (encoder2.length() == 6) { encoder2 = 0 + encoder2; }
 
 // Send one encoder value - attempting to send less data in order to reduce amount of data in buffer
   encoderAve = String(encDrive);
