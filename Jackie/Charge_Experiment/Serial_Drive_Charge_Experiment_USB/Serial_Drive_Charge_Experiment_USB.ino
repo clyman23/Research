@@ -1,6 +1,6 @@
 // Serial Communication Driving with Raspberry Pi
 // Created Conor Lyman 27 October 2015
-// Last update Conor Lyman 22 February 2016
+// Last update Conor Lyman 22 April 2016
 
 // Raspberry Pi (Python) sends commands to Arduino of where to drive. 
 // Arduino has (NEEDS) checks to brake if an obstacle is discovered while driving.

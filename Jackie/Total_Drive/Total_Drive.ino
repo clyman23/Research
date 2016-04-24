@@ -1,6 +1,6 @@
-// Serial Communication Driving with Raspberry Pi
-// Created Conor Lyman 27 October 2015
-// Last update Conor Lyman 22 April 2016
+// Program to combine driving, communication, mapping, and obstacle and energy-source detection
+// Created Conor Lyman 23 April 2016
+// Last update Conor Lyman 23 April 2016
 
 // Raspberry Pi (Python) sends commands to Arduino of where to drive. 
 // Arduino has (NEEDS) checks to brake if an obstacle is discovered while driving.
@@ -50,7 +50,6 @@ int driveMult = 0; // Command sent to tell robot how many inches to drive forwar
 float encTotalTurn = 0; // Total encoder count from turning
 float encDriveTotal = 0; // Total encoder count from driving 
 unsigned int driveCounts = 0; // Unsigned int handles larger range - should go up to 82 inches
-boolean haveTurned = false;
 
 // Strings sent by Arduino to command computer
 String index; // Specifies if robot is braking, driving, or turning
@@ -65,8 +64,8 @@ float current_mA = 0; // Stores current read by current sensor in milliamps
 float distances[ARRAY_SIZE] = {4, 5.19666666666667, 6.25666666666667, 7.22333333333333, 8.22333333333333, 9.19333333333333, 10.2133333333333, 11.2133333333333, 12.2133333333333, 13.1733333333333, 14.2133333333333, 15.2333333333333, 16.2333333333333, 17.2166666666667, 18.2033333333333, 19.2, 20.25,  21.2666666666667, 22.2066666666667, 23.2133333333333, 24.1966666666667, 25.24,  26.2066666666667, 27.2, 28.16,  29.2033333333333, 30.21,  31.2333333333333, 32.19,  33.19,  34.2, 35.2266666666667, 36.25,  37.21,  38.2266666666667, 39.165, 40.24,  41.21,  42.2033333333333, 43.19,  44.2233333333333, 45.25,  46.2366666666667, 47.2366666666667, 48.2066666666667, 49.2, 50.25,  51.2733333333333, 52.2233333333333, 53.2466666666667, 54.2033333333333, 55.2566666666667, 56.24,  57.24,  58.2066666666667, 59.2166666666667, 60.26};  
 float voltages[ARRAY_SIZE] = {3.58666666666667,  2.92666666666667, 2.52, 2.27333333333333, 2.03666666666667, 1.86333333333333, 1.73666666666667, 1.61666666666667, 1.53333333333333, 1.46333333333333, 1.40333333333333, 1.32666666666667, 1.28666666666667, 1.24333333333333, 1.21, 1.17, 1.15, 1.11333333333333, 1.09, 1.06333333333333, 1.04333333333333, 1.02666666666667, 1.01, 0.983333333333333,  0.97, 0.96, 0.94, 0.93, 0.91, 0.903333333333333,  0.893333333333333,  0.883333333333333,  0.87, 0.86, 0.85, 0.84, 0.84, 0.83, 0.813333333333333,  0.816666666666667,  0.8,  0.8,  0.796666666666667,  0.79, 0.783333333333333,  0.78, 0.776666666666667,  0.77, 0.766666666666667,  0.76, 0.763333333333333,  0.756666666666667,  0.75, 0.75, 0.74, 0.74, 0.74};
 // Arrays store output voltages of IR sensor that correspond to distance to obstacle
-// Distances are determined by reading voltage from sensor and determining distance using 
-// linear interpolation
+// Distances are determined by reading voltage from sensor and determining distance using linear interpolation
+// IR sensor has been calibrated for suface of plain white printer paper
 float distanceToObject = 0; //stores distance to an object as read by the IR sensor
 float m; // Slope of interpolation line between data points
 float isObstacle = 0;
@@ -74,7 +73,7 @@ float reading = 0; // Stores reading from distance sensor
 
 
 void setup() {
-  Serial3.begin(38400); // Baudrate = 38400
+  Serial.begin(38400); // Baudrate = 38400
   md.init(); // Motor driver initialization
   uint32_t currentFrequency; // Current sensor setup
   ina219.begin(); // Current sensor setup
@@ -87,19 +86,19 @@ void loop() {
   time = String(long(millis())); // Begin tracking time
   inWaiting = 0; // Number of incoming bytes in the serial buffer
   delay(100);
-  check = Serial3.read(); // Read first byte in serial port
-  inWaiting = Serial3.available(); // Store how many bytes are in serial buffer
+  check = Serial.read(); // Read first byte in serial port
+  inWaiting = Serial.available(); // Store how many bytes are in serial buffer
   if (check == checkCharacter && inWaiting == DATASIZE) { // Read remaing bytes only if the 
-                                                      //first character equals the check 
-                                                      //and the number of bytes equals the desired SIZE
+                                                          //first character equals the check 
+                                                          //and the number of bytes equals the desired SIZE
     for (i = 0; i < DATASIZE; i++) {
-      data[i] = Serial3.read();
+      data[i] = Serial.read();
       data[i] = data[i] - 48; // Read serial and "convert" to ints
     }
   }
   else if (check != checkCharacter && inWaiting != DATASIZE) {
-    while (Serial3.available()) { Serial3.read(); } // If conditions not met, read serial port
-                                                    //while there is data to read in order to clear it
+    while (Serial.available()) { Serial.read(); } // If conditions not met, read serial port
+                                                  //while there is data in order to clear port
   }
   drive();
   delay(50);
@@ -124,17 +123,11 @@ void drive() {
       encCount2 = abs(enc2.read());
       encDrive = (encCount1 + encCount2) / 2; // Read and average encoders
       k++;
-//      Serial3.println(k);
-//      Serial3.print(encCount1);
-//      Serial3.print(" ");
-//      Serial3.println(encCount2);
       if (k % 10 == 0) {
         endTime = String(millis() - startTime);
-        msg(1); // Send data only every 5th reading
+        msg(1); // Send data only every 10th reading
       }
-      else {
-        endTime = "0";
-      }
+      else { endTime = "0"; }
     }
     encDrive = 0;
     encCount1 = 0;
@@ -142,11 +135,8 @@ void drive() {
     enc1.write(0);
     enc2.write(0);
     driveCounts = 0;
-//    Serial3.print(encCount1);
-//    Serial3.print(" ");
-//    Serial3.println(encCount2);
     endTime = String(millis() - startTime);
-    brake();
+    brake(); // Call brake twice to ensure encoders are reset to zero (doesn't work if only called once...)
     brake();
   }
  else if (data[0] == 0) { brake(); } // Move on to brake function if the first data is 0
@@ -179,7 +169,7 @@ void brake() {
 //  encCount1 = 0;
 //  encCount2 = 0;
   delay(200);
-  if (data[3] == 1 && haveTurned == false) { Turn(); } // Execture turn function if prompted
+  if (data[3] == 1 && haveTurned = false) { Turn(); } // Execture turn function if prompted
                                 // Turn function is only executed in brake function to ensure
                                 // brakes are set before turning. Prevents going directly from driving
                                 // to braking
@@ -239,7 +229,7 @@ void distanceSense() {
     }
   }
   if (reading > voltages[i] && i == ARRAY_SIZE) {
-    Serial3.println("Something went wrong!");
+    Serial.println("Something went wrong!");
   }
   i = 0; // Reset i
 }
@@ -266,27 +256,24 @@ void msg(int motionParam) {
 
 // Send one encoder value - attempting to send less data in order to reduce amount of data in buffer
   encoderAve = String(encDrive);
-  if (encoderAve.length() == 1) { encoderAve = 000000 + encoderAve; }
-  if (encoderAve.length() == 2) { encoderAve = 00000 + encoderAve; }
-  if (encoderAve.length() == 3) { encoderAve = 0000 + encoderAve; }
-  if (encoderAve.length() == 4) { encoderAve = 000 + encoderAve; }
-  if (encoderAve.length() == 5) { encoderAve = 00 + encoderAve; }
-  if (encoderAve.length() == 6) { encoderAve = 0 + encoderAve; }
+  if (encoderAve.length() == 1) { encoderAve = 00000 + encoderAve; }
+  if (encoderAve.length() == 2) { encoderAve = 0000 + encoderAve; }
+  if (encoderAve.length() == 3) { encoderAve = 000 + encoderAve; }
+  if (encoderAve.length() == 4) { encoderAve = 00 + encoderAve; }
+  if (encoderAve.length() == 5) { encoderAve = 0 + encoderAve; }
 
-  // Degrees turned
-  angleTurned = encTotalTurn / countsDegree;
-  turn = String(int(abs(angleTurned)));
-  if (turn.length() == 1) { turn = 000 + turn; }
-  if (turn.length() == 2) { turn = 00 + turn; }
-  if (turn.length() == 3) { turn = 0 + turn; }
+//  // Degrees turned
+//  angleTurned = encTotalTurn / countsDegree;
+//  turn = String(int(abs(angleTurned)));
+//  if (turn.length() == 1) { turn = 000 + turn; }
+//  if (turn.length() == 2) { turn = 00 + turn; }
+//  if (turn.length() == 3) { turn = 0 + turn; }
 
   // Time
-  if(endTime.length() == 1) { endTime = 000000 + endTime; }
-  if(endTime.length() == 2) { endTime = 00000 + endTime; }
-  if(endTime.length() == 3) { endTime = 0000 + endTime; }
-  if(endTime.length() == 4) { endTime = 000 + endTime; }
-  if(endTime.length() == 5) { endTime = 00 + endTime; }
-  if(endTime.length() == 6) { endTime = 0 + endTime; }
+  if(endTime.length() == 1) { endTime = 0000 + endTime; }
+  if(endTime.length() == 2) { endTime = 000 + endTime; }
+  if(endTime.length() == 3) { endTime = 00 + endTime; }
+  if(endTime.length() == 4) { endTime = 0 + endTime; }
 
   // Current
   current_mA = ina219.getCurrent_mA(); // Take current reading
@@ -300,14 +287,14 @@ void msg(int motionParam) {
   if (current.length() == 7) { current = 0 + current; } 
   
   
-  Serial3.print('$');
-  Serial3.print(index);
+  Serial.print('$');
+  Serial.print(index);
 //  Serial3.print(encoder1 + " ");
 //  Serial3.print(encoder2 + " ");
-  Serial3.print(encoderAve + " ");
-  Serial3.print(turn + " ");
-  Serial3.print(endTime + " ");
-  Serial3.println(current);
+  Serial.print(encoderAve + " ");
+//  Serial3.print(turn + " ");
+  Serial.print(endTime + " ");
+  Serial.println(current);
 }
 
 
