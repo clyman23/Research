@@ -24,8 +24,8 @@ for ind, j  in enumerate(lengths):
     
     for i in range(0,15):
         #filename = '{0:02d}_gravel_Feb28_{1:02d}.csv'.format(j,i)
-        filename = '{0:02d}GrassApr13_{1:02d}.csv'.format(j,i) 
-        figname = '{0:02d}GrassApr13_{1:02d}.png'.format(j,i)
+        filename = '{0:02d}_GrassApr25_{1:02d}.csv'.format(j,i) 
+        figname = '{0:02d}_GrassApr25_{1:02d}.png'.format(j,i)
         if os.path.isfile(filename) is True:
             with open(filename, 'rb') as f:
                 mycsv = csv.reader(f)

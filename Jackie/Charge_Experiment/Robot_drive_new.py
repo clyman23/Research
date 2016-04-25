@@ -92,7 +92,7 @@ def brake_robot(brake):
 
 '''!!!!!CHANGE PARAMETERS BASED ON WHAT IS PLUGGED IN!!!!!'''
 
-dist = 33
+dist = 13
 drive = '$1'+str(dist)+'00' #drive dist inches
 brake = '$00000'
 
@@ -111,8 +111,8 @@ time.sleep(1)
 #robot.flushInput()
 #robot.flushOutput()
 
-for i in range(0,5): # range(0,5), then range(5,10), (10,15) ...
-    file_name = '{0:02d}_testApr21_{1:02d}.csv'.format(dist,i)
+for i in range(10,15): # range(0,5), then range(5,10), (10,15) ...
+    file_name = '{0:02d}_testApr25_{1:02d}.csv'.format(dist,i)
     data_file = open(file_name,'wb')
     time.sleep(0.1)
     writer = csv.writer(data_file)
