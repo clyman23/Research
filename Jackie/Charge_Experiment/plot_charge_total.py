@@ -27,7 +27,7 @@ for ind, j  in enumerate(lengths):
     charge_totals = numpy.array([])
     
     for i in range(0,20):
-        filename = '{0:02d}GrassApr13_{1:02d}.csv'.format(j,i)
+        filename = '{0:02d}_GrassApr25_{1:02d}.csv'.format(j,i)
         #filename = '{0:02d}inchesFeb26_{1:02d}.csv'.format(j,i)
         if os.path.isfile(filename) is True:
             with open(filename, 'rb') as f:
@@ -71,7 +71,7 @@ pyplot.title('Charge vs. distance')
 pyplot.xlabel('inches travelled')
 pyplot.ylabel('charge used (Amp-seconds)')
 pyplot.legend()
-#pyplot.savefig('charge_v_distance_gravel.png')
+pyplot.savefig('charge_v_distance_grass.png')
 pyplot.hold(True)
 #pyplot.savefig('charge_v_distance_labFloor.png')
 
